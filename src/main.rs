@@ -85,7 +85,7 @@ impl<I: Read, O: Write> Interpreter<I, O> {
     pub fn run(&mut self, code: &[u8]) -> io::Result<()> {
         let mut i: usize = 0;
         loop {
-            if i == code.len() {
+            if i >= code.len() {
                 break;
             }
 
@@ -99,11 +99,13 @@ impl<I: Read, O: Write> Interpreter<I, O> {
                 '[' => {
                     if self.tape.is_zero() {
                         i = self.matching_for_left_paren(i, code)?;
+                        continue;
                     }
                 }
                 ']' => {
                     if !self.tape.is_zero() {
                         i = self.matching_for_right_paren(i, code)?;
+                        continue;
                     }
                 }
                 _ => {}
@@ -122,7 +124,7 @@ impl<I: Read, O: Write> Interpreter<I, O> {
         self.output
     }
 
-    pub fn matching_for_left_paren(&self, current_index: usize, code: &[u8]) -> io::Result<usize> {
+    fn matching_for_left_paren(&self, current_index: usize, code: &[u8]) -> io::Result<usize> {
         let mut encountered: usize = 0;
 
         for (i, &character) in code[(current_index + 1)..].iter().enumerate() {
@@ -143,7 +145,7 @@ impl<I: Read, O: Write> Interpreter<I, O> {
         Err(io::Error::new(io::ErrorKind::InvalidData, "Invalid code"))
     }
 
-    pub fn matching_for_right_paren(&self, current_index: usize, code: &[u8]) -> io::Result<usize> {
+    fn matching_for_right_paren(&self, current_index: usize, code: &[u8]) -> io::Result<usize> {
         let mut encountered: usize = 0;
 
         for (i, &character) in code[..current_index].iter().enumerate().rev() {
