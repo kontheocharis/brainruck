@@ -99,13 +99,11 @@ impl<I: Read, O: Write> Interpreter<I, O> {
                 '[' => {
                     if self.tape.is_zero() {
                         i = self.matching_for_left_paren(i, code)?;
-                        continue;
                     }
                 }
                 ']' => {
                     if !self.tape.is_zero() {
                         i = self.matching_for_right_paren(i, code)?;
-                        continue;
                     }
                 }
                 _ => {}
